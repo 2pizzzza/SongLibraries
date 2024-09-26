@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/2pizzzza/TestTask/internal/config"
 	"github.com/2pizzzza/TestTask/internal/lib/logger/sl"
+	"github.com/2pizzzza/TestTask/internal/service"
 	"github.com/2pizzzza/TestTask/internal/storage/postgres"
 	"log"
 	"log/slog"
@@ -31,7 +32,8 @@ func main() {
 		logs.Error("Failed connect db err: %s", sl.Err(err))
 	}
 
-	_ = db
+	songService := service.New(*logs, db)
+	_ = songService
 
 	log.Printf("Server is live")
 	log.Fatal(http.ListenAndServe(":8080", nil))
