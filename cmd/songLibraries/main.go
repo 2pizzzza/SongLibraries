@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"github.com/2pizzzza/TestTask/internal/config"
+	"github.com/2pizzzza/TestTask/internal/http-server/middleware/logger"
 	"github.com/2pizzzza/TestTask/internal/lib/logger/sl"
 	"github.com/2pizzzza/TestTask/internal/service"
 	"github.com/2pizzzza/TestTask/internal/storage/postgres"
@@ -17,6 +19,10 @@ const (
 	envProd  = "prod"
 )
 
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Fprintf(w, "Welcome to the homepage!")
+}
 func main() {
 	env, err := config.NewConfig()
 
@@ -33,10 +39,16 @@ func main() {
 	}
 
 	songService := service.New(*logs, db)
+
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/", homeHandler)
+
+	loggedMux := logger.LoggingMiddleware(mux)
 	_ = songService
 
-	log.Printf("Server is live")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Printf("Server is live. port: %d", env.HttpConn.HttpPort)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", env.HttpConn.HttpPort), loggedMux))
 }
 
 func setupLogger(env string) *slog.Logger {

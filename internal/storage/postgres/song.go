@@ -11,10 +11,10 @@ import (
 	"time"
 )
 
-func (s *Storage) CreateSong(
+func (s *Storage) Save(
 	ctx context.Context, groupName, songName string) (string, error) {
 
-	const op = "postgres.song.CreateSong"
+	const op = "postgres.song.Save"
 
 	err := s.Db.QueryRow(
 		"INSERT INTO testtask.public.songs (group_name, song_title) VALUES($1, $2)",
@@ -29,10 +29,10 @@ func (s *Storage) CreateSong(
 	return "Success create song", nil
 }
 
-func (s *Storage) GetSongById(
+func (s *Storage) GetById(
 	ctx context.Context, id int64) (models.Song, error) {
 
-	const op = "postgres.song.GetSongById"
+	const op = "postgres.song.GetById"
 
 	var (
 		idTemp      int64
@@ -75,10 +75,10 @@ func (s *Storage) GetSongById(
 	}, nil
 }
 
-func (s *Storage) UpdateSong(
+func (s *Storage) Update(
 	ctx context.Context, id int64, newGroupName, newSongName string) (models.Song, error) {
 
-	const op = "postgres.song.UpdateSong"
+	const op = "postgres.song.Update"
 
 	stmt, err := s.Db.Prepare("UPDATE testtask.public.songs SET group_name = $2, song_title = $3 WHERE id = $1")
 
@@ -107,7 +107,7 @@ func (s *Storage) UpdateSong(
 		return models.Song{}, storage.ErrSongExists
 	}
 
-	song, err := s.GetSongById(ctx, id)
+	song, err := s.GetById(ctx, id)
 	if err != nil {
 		return models.Song{}, fmt.Errorf("%s, %w", op, err)
 	}
@@ -115,10 +115,10 @@ func (s *Storage) UpdateSong(
 	return song, nil
 }
 
-func (s *Storage) RemoveSong(
+func (s *Storage) Remove(
 	ctx context.Context, id int64) (string, error) {
 
-	const op = "postgres.song.RemoveSong"
+	const op = "postgres.song.Remove"
 
 	stmt, err := s.Db.Prepare("DELETE FROM testtask.public.songs WHERE id = $1")
 
@@ -147,13 +147,13 @@ func (s *Storage) RemoveSong(
 		return "", storage.ErrSongNotFound
 	}
 
-	return fmt.Sprintf("Successfully deleted todo id: %d", id), nil
+	return fmt.Sprintf("Successfully deleted song id: %d", id), nil
 }
 
-func (s *Storage) GetAllSongs(
+func (s *Storage) GetAll(
 	ctx context.Context) (songs []*models.Song, err error) {
 
-	const op = "postgres.song.GetAllSongs"
+	const op = "postgres.song.GetAll"
 
 	var (
 		id          int64
