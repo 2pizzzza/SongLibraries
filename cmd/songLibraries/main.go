@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/2pizzzza/TestTask/internal/config"
+	"github.com/2pizzzza/TestTask/internal/http-server/handlers"
 	"github.com/2pizzzza/TestTask/internal/http-server/middleware/logger"
 	"github.com/2pizzzza/TestTask/internal/lib/logger/sl"
 	"github.com/2pizzzza/TestTask/internal/service"
@@ -39,10 +40,12 @@ func main() {
 	}
 
 	songService := service.New(*logs, db)
+	songHandler := handlers.New(songService)
 
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/", homeHandler)
+	mux.HandleFunc("/songCreate", songHandler.CreateSongHandler)
 
 	loggedMux := logger.LoggingMiddleware(mux)
 	_ = songService

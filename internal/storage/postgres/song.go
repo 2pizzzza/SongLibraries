@@ -16,16 +16,31 @@ func (s *Storage) Save(
 
 	const op = "postgres.song.Save"
 
+	var exists bool
 	err := s.Db.QueryRow(
+		"SELECT EXISTS(SELECT 1 FROM testtask.public.songs WHERE group_name = $1 AND song_title = $2)",
+		groupName, songName).Scan(&exists)
+
+	if err != nil {
+		log.Printf("failed to check existence: %v op: %s", err, op)
+		return "", fmt.Errorf("%s, %w", op, err)
+	}
+
+	if exists {
+		log.Printf("Song already exists: group %s, song %s", groupName, songName)
+		return "Song already exists", fmt.Errorf("the song '%s' by group '%s' already exists", songName, groupName)
+	}
+
+	_, err = s.Db.Exec(
 		"INSERT INTO testtask.public.songs (group_name, song_title) VALUES($1, $2)",
 		groupName, songName)
 
 	if err != nil {
-		log.Printf("failed create song: %v op: %s", err, op)
-
+		log.Printf("failed to create song: %v op: %s", err, op)
 		return "", fmt.Errorf("%s, %w", op, err)
 	}
 
+	log.Println("Song created successfully: group ", groupName, "song", songName)
 	return "Success create song", nil
 }
 

@@ -6,9 +6,17 @@ import (
 	"log/slog"
 )
 
-type SongImpl struct {
-	log      *slog.Logger
-	songImpl SongRepository
+type songRep struct {
+	log     *slog.Logger
+	songRep SongRepository
+}
+
+type SongService interface {
+	CreateSong(ctx context.Context, req models.SongCreateReq) (string, error)
+	UpdateSong(ctx context.Context, req models.SongUpdateReq) (models.Song, error)
+	GetSongByID(ctx context.Context, id int64) (models.Song, error)
+	DeleteSong(ctx context.Context, id int64) (string, error)
+	GetAllSong(ctx context.Context) (songs []*models.Song, err error)
 }
 
 type SongRepository interface {
@@ -21,9 +29,9 @@ type SongRepository interface {
 
 func New(
 	log slog.Logger,
-	song SongRepository) *SongImpl {
-	return &SongImpl{
-		log:      &log,
-		songImpl: song,
+	song SongRepository) *songRep {
+	return &songRep{
+		log:     &log,
+		songRep: song,
 	}
 }

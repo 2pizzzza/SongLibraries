@@ -8,7 +8,7 @@ import (
 	"log/slog"
 )
 
-func (s *SongImpl) CreateSong(
+func (s *songRep) CreateSong(
 	ctx context.Context, req models.SongCreateReq) (string, error) {
 
 	const op = "service.song.Create"
@@ -17,12 +17,12 @@ func (s *SongImpl) CreateSong(
 		slog.String("op: ", op),
 	)
 
-	msg, err := s.songImpl.Save(ctx, req.GroupName, req.SongName)
+	msg, err := s.songRep.Save(ctx, req.GroupName, req.SongName)
 
 	if err != nil {
-		log.Error("failed create song", sl.Err(err))
+		log.Error(msg, sl.Err(err))
 
-		return "", fmt.Errorf("%s: %w", op, err)
+		return msg, fmt.Errorf("%s: %w", op, err)
 	}
 
 	log.Info("the song was created")
@@ -30,7 +30,7 @@ func (s *SongImpl) CreateSong(
 	return msg, nil
 }
 
-func (s *SongImpl) UpdateSong(
+func (s *songRep) UpdateSong(
 	ctx context.Context, req models.SongUpdateReq) (models.Song, error) {
 
 	const op = "service.song.UpdateSong"
@@ -39,7 +39,7 @@ func (s *SongImpl) UpdateSong(
 		slog.String("op: ", op),
 	)
 
-	song, err := s.songImpl.Update(ctx, req.Id, req.NewGroupName, req.NewSongName)
+	song, err := s.songRep.Update(ctx, req.Id, req.NewGroupName, req.NewSongName)
 
 	if err != nil {
 		log.Error("failed update song", sl.Err(err))
@@ -52,7 +52,7 @@ func (s *SongImpl) UpdateSong(
 	return song, nil
 }
 
-func (s *SongImpl) GetSongByID(
+func (s *songRep) GetSongByID(
 	ctx context.Context, id int64) (models.Song, error) {
 
 	const op = "service.song.GetSongById"
@@ -60,7 +60,7 @@ func (s *SongImpl) GetSongByID(
 	log := s.log.With(
 		slog.String("op: ", op),
 	)
-	song, err := s.songImpl.GetById(ctx, id)
+	song, err := s.songRep.GetById(ctx, id)
 	if err != nil {
 		log.Error("Dont get song by id", sl.Err(err))
 
@@ -72,7 +72,7 @@ func (s *SongImpl) GetSongByID(
 	return song, nil
 }
 
-func (s *SongImpl) DeleteSong(
+func (s *songRep) DeleteSong(
 	ctx context.Context, id int64) (string, error) {
 
 	const op = "service.song.DeleteSong"
@@ -81,7 +81,7 @@ func (s *SongImpl) DeleteSong(
 		slog.String("op: ", op),
 	)
 
-	msg, err := s.songImpl.Remove(ctx, id)
+	msg, err := s.songRep.Remove(ctx, id)
 	if err != nil {
 		log.Error("Dont get song by id", sl.Err(err))
 
@@ -92,7 +92,7 @@ func (s *SongImpl) DeleteSong(
 	return msg, err
 }
 
-func (s *SongImpl) GetAllSong(
+func (s *songRep) GetAllSong(
 	ctx context.Context) (songs []*models.Song, err error) {
 
 	const op = "service.song.GetAllSong"
@@ -101,7 +101,7 @@ func (s *SongImpl) GetAllSong(
 		slog.String("op: ", op),
 	)
 
-	songs, err = s.songImpl.GetAll(ctx)
+	songs, err = s.songRep.GetAll(ctx)
 
 	if err != nil {
 		log.Error("failed to get all songs", sl.Err(err))
