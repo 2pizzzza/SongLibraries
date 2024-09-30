@@ -2,12 +2,14 @@ package main
 
 import (
 	"fmt"
+	_ "github.com/2pizzzza/TestTask/cmd/songLibraries/docs"
 	"github.com/2pizzzza/TestTask/internal/config"
 	"github.com/2pizzzza/TestTask/internal/http-server/handlers"
 	"github.com/2pizzzza/TestTask/internal/http-server/middleware/logger"
 	"github.com/2pizzzza/TestTask/internal/lib/logger/sl"
 	"github.com/2pizzzza/TestTask/internal/service"
 	"github.com/2pizzzza/TestTask/internal/storage/postgres"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"log"
 	"log/slog"
 	"net/http"
@@ -20,10 +22,33 @@ const (
 	envProd  = "prod"
 )
 
+// @title Example API
+// @version 1.0
+// @description This is a sample API server.
+// @host localhost:8080
+// @BasePath /api
+
+// @Summary Hello endpoint
+// @Description Returns a greeting message.
+// @Produce json
+// @Success 200 {string} string "OK"
+// @Router /hello [get]
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintf(w, "Welcome to the homepage!")
 }
+
+// @title Example API
+// @version 1.0
+// @description This is a sample API server.
+// @host localhost:8080
+// @BasePath /api
+
+// @Summary Hello endpoint
+// @Description Returns a greeting message.
+// @Produce json
+// @Success 200 {string} string "OK"
+// @Router /hello [get]
 func main() {
 	env, err := config.NewConfig()
 
@@ -43,9 +68,10 @@ func main() {
 	songHandler := handlers.New(songService)
 
 	mux := http.NewServeMux()
-
-	mux.HandleFunc("/", homeHandler)
+	mux.HandleFunc("/hello", homeHandler)
 	mux.HandleFunc("/songCreate", songHandler.CreateSongHandler)
+	mux.HandleFunc("/songUpdate", songHandler.UpdateSongHandler)
+	mux.HandleFunc("/swagger/", httpSwagger.WrapHandler)
 
 	loggedMux := logger.LoggingMiddleware(mux)
 	_ = songService

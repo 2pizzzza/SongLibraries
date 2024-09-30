@@ -6,7 +6,7 @@ import (
 	"log/slog"
 )
 
-type songRep struct {
+type SongRep struct {
 	log     *slog.Logger
 	songRep SongRepository
 }
@@ -29,8 +29,8 @@ type SongRepository interface {
 
 func New(
 	log slog.Logger,
-	song SongRepository) *songRep {
-	return &songRep{
+	song SongRepository) *SongRep {
+	return &SongRep{
 		log:     &log,
 		songRep: song,
 	}

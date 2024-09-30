@@ -8,7 +8,7 @@ import (
 	"log/slog"
 )
 
-func (s *songRep) CreateSong(
+func (s *SongRep) CreateSong(
 	ctx context.Context, req models.SongCreateReq) (string, error) {
 
 	const op = "service.song.Create"
@@ -30,7 +30,7 @@ func (s *songRep) CreateSong(
 	return msg, nil
 }
 
-func (s *songRep) UpdateSong(
+func (s *SongRep) UpdateSong(
 	ctx context.Context, req models.SongUpdateReq) (models.Song, error) {
 
 	const op = "service.song.UpdateSong"
@@ -52,7 +52,7 @@ func (s *songRep) UpdateSong(
 	return song, nil
 }
 
-func (s *songRep) GetSongByID(
+func (s *SongRep) GetSongByID(
 	ctx context.Context, id int64) (models.Song, error) {
 
 	const op = "service.song.GetSongById"
@@ -72,7 +72,7 @@ func (s *songRep) GetSongByID(
 	return song, nil
 }
 
-func (s *songRep) DeleteSong(
+func (s *SongRep) DeleteSong(
 	ctx context.Context, id int64) (string, error) {
 
 	const op = "service.song.DeleteSong"
@@ -92,7 +92,7 @@ func (s *songRep) DeleteSong(
 	return msg, err
 }
 
-func (s *songRep) GetAllSong(
+func (s *SongRep) GetAllSong(
 	ctx context.Context) (songs []*models.Song, err error) {
 
 	const op = "service.song.GetAllSong"

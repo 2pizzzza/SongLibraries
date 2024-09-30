@@ -8,7 +8,6 @@ import (
 	"github.com/2pizzzza/TestTask/internal/domain/models"
 	"github.com/2pizzzza/TestTask/internal/storage"
 	"log"
-	"time"
 )
 
 func (s *Storage) Save(
@@ -49,30 +48,19 @@ func (s *Storage) GetById(
 
 	const op = "postgres.song.GetById"
 
-	var (
-		idTemp      int64
-		group       string
-		song        string
-		releaseDate time.Time
-		lyrics      string
-		link        string
-	)
+	var song models.Song
 
-	stmt, err := s.Db.Prepare("SELECT * FROM testtask.public.songs WHERE id = $1")
-
-	defer func(stmt *sql.Stmt) {
-		err := stmt.Close()
-		if err != nil {
-
-		}
-	}(stmt)
-
+	stmt, err := s.Db.Prepare("SELECT id, group_name, song_title, release_date, lyrics, link FROM testtask.public.songs WHERE id = $1")
 	if err != nil {
 		return models.Song{}, fmt.Errorf("%s, %w", op, err)
 	}
+	defer func() {
+		if closeErr := stmt.Close(); closeErr != nil {
+			log.Printf("failed to close statement: %v", closeErr)
+		}
+	}()
 
-	err = stmt.QueryRow(id).Scan(&idTemp, &group, &song, &releaseDate, &lyrics, &link)
-
+	err = stmt.QueryRow(id).Scan(&song.Id, &song.GroupName, &song.SongName, &song.ReleaseDate, &song.Lyrics, &song.Link)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return models.Song{}, storage.ErrSongNotFound
@@ -80,14 +68,7 @@ func (s *Storage) GetById(
 		return models.Song{}, fmt.Errorf("%s, %w", op, err)
 	}
 
-	return models.Song{
-		Id:          idTemp,
-		GroupName:   group,
-		SongName:    song,
-		ReleaseDate: releaseDate,
-		Lyrics:      lyrics,
-		Link:        link,
-	}, nil
+	return song, nil
 }
 
 func (s *Storage) Update(
@@ -96,30 +77,27 @@ func (s *Storage) Update(
 	const op = "postgres.song.Update"
 
 	stmt, err := s.Db.Prepare("UPDATE testtask.public.songs SET group_name = $2, song_title = $3 WHERE id = $1")
-
-	defer func(stmt *sql.Stmt) {
-		err := stmt.Close()
-		if err != nil {
-
-		}
-	}(stmt)
-
 	if err != nil {
 		return models.Song{}, fmt.Errorf("%s, %w", op, err)
 	}
+	defer func() {
+		if closeErr := stmt.Close(); closeErr != nil {
+			log.Printf("failed to close statement: %v", closeErr)
+		}
+	}()
 
 	res, err := stmt.Exec(id, newGroupName, newSongName)
 	if err != nil {
 		return models.Song{}, fmt.Errorf("%s, %w", op, err)
 	}
 
-	rowAffected, err := res.RowsAffected()
+	rowsAffected, err := res.RowsAffected()
 	if err != nil {
 		return models.Song{}, fmt.Errorf("%s, %w", op, err)
 	}
 
-	if rowAffected == 0 {
-		return models.Song{}, storage.ErrSongExists
+	if rowsAffected == 0 {
+		return models.Song{}, fmt.Errorf("%s: song with id %d not found", op, id)
 	}
 
 	song, err := s.GetById(ctx, id)
@@ -130,23 +108,18 @@ func (s *Storage) Update(
 	return song, nil
 }
 
-func (s *Storage) Remove(
-	ctx context.Context, id int64) (string, error) {
-
+func (s *Storage) Remove(ctx context.Context, id int64) (string, error) {
 	const op = "postgres.song.Remove"
 
 	stmt, err := s.Db.Prepare("DELETE FROM testtask.public.songs WHERE id = $1")
-
-	defer func(stmt *sql.Stmt) {
-		err := stmt.Close()
-		if err != nil {
-
-		}
-	}(stmt)
-
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
+	defer func() {
+		if closeErr := stmt.Close(); closeErr != nil {
+			log.Printf("failed to close statement: %v", closeErr)
+		}
+	}()
 
 	res, err := stmt.Exec(id)
 	if err != nil {
@@ -165,46 +138,30 @@ func (s *Storage) Remove(
 	return fmt.Sprintf("Successfully deleted song id: %d", id), nil
 }
 
-func (s *Storage) GetAll(
-	ctx context.Context) (songs []*models.Song, err error) {
-
+func (s *Storage) GetAll(ctx context.Context) (songs []*models.Song, err error) {
 	const op = "postgres.song.GetAll"
 
-	var (
-		id          int64
-		group       string
-		song        string
-		releaseDate time.Time
-		lyrics      string
-		link        string
-	)
-
-	rows, err := s.Db.Query("SELECT * FROM testtask.public.songs ORDER BY id DESC ")
-
-	defer func(rows *sql.Rows) {
-		err := rows.Close()
-		if err != nil {
-
-		}
-	}(rows)
-
+	rows, err := s.Db.Query("SELECT * FROM testtask.public.songs ORDER BY id DESC")
 	if err != nil {
-		log.Printf("failed to query do: %v", err)
-		return nil, err
+		log.Printf("failed to query songs: %v", err)
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
+	defer func() {
+		if closeErr := rows.Close(); closeErr != nil {
+			log.Printf("failed to close rows: %v", closeErr)
+		}
+	}()
 
 	for rows.Next() {
-		if err := rows.Scan(&id, &group, &song, &releaseDate, &lyrics, &link); err != nil {
-			log.Fatal(err)
+		var song models.Song
+		if err := rows.Scan(&song.Id, &song.GroupName, &song.SongName, &song.ReleaseDate, &song.Lyrics, &song.Link); err != nil {
+			return nil, fmt.Errorf("%s: %w", op, err)
 		}
-		songs = append(songs, &models.Song{
-			Id:          id,
-			GroupName:   group,
-			SongName:    song,
-			ReleaseDate: releaseDate,
-			Lyrics:      lyrics,
-			Link:        link,
-		})
+		songs = append(songs, &song)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
 	return songs, nil

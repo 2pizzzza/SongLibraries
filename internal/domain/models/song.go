@@ -20,9 +20,9 @@ type SongCreateReq struct {
 }
 
 type SongUpdateReq struct {
-	Id           int64
-	NewGroupName string
-	NewSongName  string
+	Id           int64  `json:"id"`
+	NewGroupName string `json:"new_group_name"`
+	NewSongName  string `json:"new_song_name"`
 }
 
 type SongCreateResponse struct {

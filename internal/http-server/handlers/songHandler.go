@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"fmt"
 	"github.com/2pizzzza/TestTask/internal/domain/models"
 	"github.com/2pizzzza/TestTask/internal/service"
 	"github.com/2pizzzza/TestTask/internal/utils"
@@ -31,7 +30,7 @@ func (h *Handlers) CreateSongHandler(w http.ResponseWriter, r *http.Request) {
 
 	msg, err := h.SongService.CreateSong(context.Background(), songCreateReq)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("%e", err, msg), http.StatusInternalServerError)
+		http.Error(w, "Failed create song", http.StatusInternalServerError)
 		return
 	}
 
@@ -40,4 +39,23 @@ func (h *Handlers) CreateSongHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.WriteResponseBody(w, resp)
+}
+
+func (h *Handlers) UpdateSongHandler(w http.ResponseWriter, r *http.Request) {
+	var req models.SongUpdateReq
+	utils.ReadRequestBody(r, &req)
+
+	songUpdateReq := models.SongUpdateReq{
+		Id:           req.Id,
+		NewGroupName: req.NewGroupName,
+		NewSongName:  req.NewSongName,
+	}
+
+	song, err := h.SongService.UpdateSong(context.Background(), songUpdateReq)
+	if err != nil {
+		http.Error(w, "Failed to update song", http.StatusInternalServerError)
+		return
+	}
+
+	utils.WriteResponseBody(w, song)
 }
