@@ -2,7 +2,7 @@
     "swagger": "2.0",
     "info": {
         "description": "This is a sample API server.",
-        "title": "Example API",
+        "title": "Song Libraries",
         "contact": {},
         "version": "1.0"
     },
@@ -15,7 +15,6 @@
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Hello endpoint",
                 "responses": {
                     "200": {
                         "description": "OK",

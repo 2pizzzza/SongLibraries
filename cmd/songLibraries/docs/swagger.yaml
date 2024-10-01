@@ -45,7 +45,7 @@ host: localhost:8080
 info:
   contact: {}
   description: This is a sample API server.
-  title: Example API
+  title: Song Libraries
   version: "1.0"
 paths:
   /hello:
@@ -58,7 +58,6 @@ paths:
           description: OK
           schema:
             type: string
-      summary: Hello endpoint
   /songs:
     get:
       description: Retrieve all songs with optional filtering and pagination

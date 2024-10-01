@@ -22,29 +22,12 @@ const (
 	envProd  = "prod"
 )
 
-// @title Example API
-// @version 1.0
-// @description This is a sample API server.
-// @host localhost:8080
-// @BasePath /api
-
-// @Summary Hello endpoint
-// @Description Returns a greeting message.
-// @Produce json
-// @Success 200 {string} string "OK"
-// @Router /hello [get]
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-
-	fmt.Fprintf(w, "Welcome to the homepage!")
-}
-
-// @title Example API
+// @title Song Libraries
 // @version 1.0
 // @description This is a sample API server.
 // @host localhost:8080
 // @BasePath /
 
-// @Summary Hello endpoint
 // @Description Returns a greeting message.
 // @Produce json
 // @Success 200 {string} string "OK"
@@ -68,7 +51,6 @@ func main() {
 	songHandler := handlers.New(songService)
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/hello", homeHandler)
 	mux.HandleFunc("/songs/create", songHandler.CreateSongHandler)
 	mux.HandleFunc("/songs/update", songHandler.UpdateSongHandler)
 	mux.HandleFunc("/songs/info", songHandler.GetSongByIDHandler)
@@ -80,7 +62,7 @@ func main() {
 	_ = songService
 
 	log.Printf("Server is live. port: %d", env.HttpConn.HttpPort)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", env.HttpConn.HttpPort), loggedMux))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%	d", env.HttpConn.HttpPort), loggedMux))
 }
 
 func setupLogger(env string) *slog.Logger {

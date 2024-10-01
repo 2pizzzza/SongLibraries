@@ -21,7 +21,6 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Hello endpoint",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -355,7 +354,7 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:8080",
 	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "Example API",
+	Title:            "Song Libraries",
 	Description:      "This is a sample API server.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
