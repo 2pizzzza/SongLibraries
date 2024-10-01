@@ -9,28 +9,21 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.swagger.io/support",
+            "email": "support@swagger.io"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/hello": {
-            "get": {
-                "description": "Returns a greeting message.",
-                "produces": [
-                    "application/json"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/songs": {
             "get": {
                 "description": "Retrieve all songs with optional filtering and pagination",
@@ -138,7 +131,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/songs/delete/{id}": {
+        "/songs/delete": {
             "delete": {
                 "description": "Remove a song from the library by its ID",
                 "produces": [
@@ -153,7 +146,7 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "Song ID",
                         "name": "id",
-                        "in": "path",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -194,7 +187,7 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "Song ID",
                         "name": "id",
-                        "in": "path",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -351,11 +344,11 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
+	Host:             "127.0.0.1:8080",
 	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "Song Libraries",
-	Description:      "This is a sample API server.",
+	Title:            "Swagger Song Libraries API",
+	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

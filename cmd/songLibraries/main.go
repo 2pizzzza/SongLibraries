@@ -22,16 +22,19 @@ const (
 	envProd  = "prod"
 )
 
-// @title Song Libraries
+// @title Swagger Song Libraries API
 // @version 1.0
-// @description This is a sample API server.
-// @host localhost:8080
-// @BasePath /
+// @termsOfService http://swagger.io/terms/
 
-// @Description Returns a greeting message.
-// @Produce json
-// @Success 200 {string} string "OK"
-// @Router /hello [get]
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host 127.0.0.1:8080
+// @BasePath /
 func main() {
 	env, err := config.NewConfig()
 

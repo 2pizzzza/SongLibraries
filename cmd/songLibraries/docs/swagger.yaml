@@ -41,23 +41,19 @@ definitions:
       new_song_name:
         type: string
     type: object
-host: localhost:8080
+host: 127.0.0.1:8080
 info:
-  contact: {}
-  description: This is a sample API server.
-  title: Song Libraries
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Song Libraries API
   version: "1.0"
 paths:
-  /hello:
-    get:
-      description: Returns a greeting message.
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: string
   /songs:
     get:
       description: Retrieve all songs with optional filtering and pagination
@@ -128,12 +124,12 @@ paths:
       summary: Create a new song
       tags:
       - songs
-  /songs/delete/{id}:
+  /songs/delete:
     delete:
       description: Remove a song from the library by its ID
       parameters:
       - description: Song ID
-        in: path
+        in: query
         name: id
         required: true
         type: integer
@@ -160,7 +156,7 @@ paths:
       description: Retrieve the details of a song by its ID
       parameters:
       - description: Song ID
-        in: path
+        in: query
         name: id
         required: true
         type: integer

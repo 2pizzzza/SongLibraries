@@ -93,7 +93,7 @@ func (h *Handlers) UpdateSongHandler(w http.ResponseWriter, r *http.Request) {
 // @Description Retrieve the details of a song by its ID
 // @Tags songs
 // @Produce json
-// @Param id path int true "Song ID"
+// @Param id query int true "Song ID"
 // @Success 200 {object} models.Song "Song found"
 // @Failure 404 {object} models.ErrorResponse "Song not found"
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
@@ -129,11 +129,11 @@ func (h *Handlers) GetSongByIDHandler(w http.ResponseWriter, r *http.Request) {
 // @Description Remove a song from the library by its ID
 // @Tags songs
 // @Produce json
-// @Param id path int true "Song ID"
+// @Param id query int true "Song ID"
 // @Success 200 {string} string "Successfully deleted song"
 // @Failure 404 {object} models.ErrorResponse "Song not found"
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
-// @Router /songs/delete/{id} [delete]
+// @Router /songs/delete [delete]
 func (h *Handlers) DeleteSongHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := r.URL.Query().Get("id")
 	log.Print("asdsa", idStr)
