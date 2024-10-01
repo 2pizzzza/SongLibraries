@@ -12,11 +12,8 @@ type Song struct {
 }
 
 type SongCreateReq struct {
-	GroupName   string    `json:"group_name"`
-	SongName    string    `json:"song_name"`
-	ReleaseDate time.Time `json:"release_date"`
-	Lyrics      string    `json:"lyrics"`
-	Link        string    `json:"link"`
+	GroupName string `json:"group_name"`
+	SongName  string `json:"song_name"`
 }
 
 type SongUpdateReq struct {
@@ -26,5 +23,15 @@ type SongUpdateReq struct {
 }
 
 type SongCreateResponse struct {
+	Message string `json:"message"`
+}
+
+type SongFilter struct {
+	GroupName   string
+	SongName    string
+	ReleaseDate string
+}
+
+type ErrorResponse struct {
 	Message string `json:"message"`
 }

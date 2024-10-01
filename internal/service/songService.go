@@ -16,7 +16,7 @@ type SongService interface {
 	UpdateSong(ctx context.Context, req models.SongUpdateReq) (models.Song, error)
 	GetSongByID(ctx context.Context, id int64) (models.Song, error)
 	DeleteSong(ctx context.Context, id int64) (string, error)
-	GetAllSong(ctx context.Context) (songs []*models.Song, err error)
+	GetAllSong(ctx context.Context, filter models.SongFilter, limit, offset int) (songs []*models.Song, err error)
 }
 
 type SongRepository interface {
@@ -24,7 +24,7 @@ type SongRepository interface {
 	GetById(ctx context.Context, id int64) (models.Song, error)
 	Update(ctx context.Context, id int64, newGroupName, newSongName string) (models.Song, error)
 	Remove(ctx context.Context, id int64) (string, error)
-	GetAll(ctx context.Context) (songs []*models.Song, err error)
+	GetAll(ctx context.Context, filter models.SongFilter, limit, offset int) (songs []*models.Song, err error)
 }
 
 func New(

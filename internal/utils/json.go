@@ -5,17 +5,20 @@ import (
 	"net/http"
 )
 
-func ReadRequestBody(r *http.Request, result interface{}) {
+func ReadRequestBody(r *http.Request, result interface{}) error {
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(result)
-	PanicIfError(err)
+	if err != nil {
+		return err
+	}
+	return nil
 }
-
-func WriteResponseBody(write http.ResponseWriter, response interface{}) {
-	write.Header().Add("Content-Type", "application/json")
-	encoder := json.NewEncoder(write)
-	err := encoder.Encode(response)
-	PanicIfError(err)
+func WriteResponseBody(w http.ResponseWriter, data interface{}, statusCode int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	}
 }
 
 func PanicIfError(err error) {

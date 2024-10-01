@@ -1,4 +1,46 @@
-basePath: /api
+basePath: /
+definitions:
+  models.ErrorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  models.Song:
+    properties:
+      groupName:
+        type: string
+      id:
+        type: integer
+      link:
+        type: string
+      lyrics:
+        type: string
+      releaseDate:
+        type: string
+      songName:
+        type: string
+    type: object
+  models.SongCreateReq:
+    properties:
+      group_name:
+        type: string
+      song_name:
+        type: string
+    type: object
+  models.SongCreateResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  models.SongUpdateReq:
+    properties:
+      id:
+        type: integer
+      new_group_name:
+        type: string
+      new_song_name:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -17,4 +59,167 @@ paths:
           schema:
             type: string
       summary: Hello endpoint
+  /songs:
+    get:
+      description: Retrieve all songs with optional filtering and pagination
+      parameters:
+      - description: Group name filter
+        in: query
+        name: group_name
+        type: string
+      - description: Song title filter
+        in: query
+        name: song_name
+        type: string
+      - description: Release date filter
+        in: query
+        name: release_date
+        type: string
+      - description: Number of songs to return
+        in: query
+        name: limit
+        type: integer
+      - description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of songs
+          schema:
+            items:
+              $ref: '#/definitions/models.Song'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get all songs
+      tags:
+      - songs
+  /songs/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new song in the library
+      parameters:
+      - description: Song data
+        in: body
+        name: song
+        required: true
+        schema:
+          $ref: '#/definitions/models.SongCreateReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Song created successfully
+          schema:
+            $ref: '#/definitions/models.SongCreateResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create a new song
+      tags:
+      - songs
+  /songs/delete/{id}:
+    delete:
+      description: Remove a song from the library by its ID
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted song
+          schema:
+            type: string
+        "404":
+          description: Song not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Delete a song by ID
+      tags:
+      - songs
+  /songs/info:
+    get:
+      description: Retrieve the details of a song by its ID
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Song found
+          schema:
+            $ref: '#/definitions/models.Song'
+        "404":
+          description: Song not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get a song by ID
+      tags:
+      - songs
+  /songs/update:
+    put:
+      consumes:
+      - application/json
+      description: Update the details of a song by ID
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated song data
+        in: body
+        name: song
+        required: true
+        schema:
+          $ref: '#/definitions/models.SongUpdateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Song updated successfully
+          schema:
+            $ref: '#/definitions/models.Song'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Song not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Update an existing song
+      tags:
+      - songs
 swagger: "2.0"

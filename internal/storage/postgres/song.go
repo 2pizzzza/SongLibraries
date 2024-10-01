@@ -138,10 +138,33 @@ func (s *Storage) Remove(ctx context.Context, id int64) (string, error) {
 	return fmt.Sprintf("Successfully deleted song id: %d", id), nil
 }
 
-func (s *Storage) GetAll(ctx context.Context) (songs []*models.Song, err error) {
+func (s *Storage) GetAll(ctx context.Context, filter models.SongFilter, limit, offset int) (songs []*models.Song, err error) {
 	const op = "postgres.song.GetAll"
 
-	rows, err := s.Db.Query("SELECT * FROM testtask.public.songs ORDER BY id DESC")
+	query := "SELECT * FROM testtask.public.songs WHERE TRUE"
+	args := []interface{}{}
+	argCount := 1
+
+	if filter.GroupName != "" {
+		query += fmt.Sprintf(" AND group_name ILIKE $%d", argCount)
+		args = append(args, "%"+filter.GroupName+"%")
+		argCount++
+	}
+	if filter.SongName != "" {
+		query += fmt.Sprintf(" AND song_title ILIKE $%d", argCount)
+		args = append(args, "%"+filter.SongName+"%")
+		argCount++
+	}
+	if filter.ReleaseDate != "" {
+		query += fmt.Sprintf(" AND release_date = $%d", argCount)
+		args = append(args, filter.ReleaseDate)
+		argCount++
+	}
+
+	query += fmt.Sprintf(" ORDER BY id DESC LIMIT $%d OFFSET $%d", argCount, argCount+1)
+	args = append(args, limit, offset)
+
+	rows, err := s.Db.Query(query, args...)
 	if err != nil {
 		log.Printf("failed to query songs: %v", err)
 		return nil, fmt.Errorf("%s: %w", op, err)

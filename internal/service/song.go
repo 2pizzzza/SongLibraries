@@ -92,23 +92,19 @@ func (s *SongRep) DeleteSong(
 	return msg, err
 }
 
-func (s *SongRep) GetAllSong(
-	ctx context.Context) (songs []*models.Song, err error) {
-
+func (s *SongRep) GetAllSong(ctx context.Context, filter models.SongFilter, limit, offset int) (songs []*models.Song, err error) {
 	const op = "service.song.GetAllSong"
 
 	log := s.log.With(
 		slog.String("op: ", op),
 	)
 
-	songs, err = s.songRep.GetAll(ctx)
-
+	songs, err = s.songRep.GetAll(ctx, filter, limit, offset)
 	if err != nil {
-		log.Error("failed to get all songs", sl.Err(err))
-
+		log.Error("failed to get songs", sl.Err(err))
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	log.Info("Get all songs")
+	log.Info("fetched all songs")
 	return songs, nil
 }

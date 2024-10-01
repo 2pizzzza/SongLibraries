@@ -42,7 +42,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // @version 1.0
 // @description This is a sample API server.
 // @host localhost:8080
-// @BasePath /api
+// @BasePath /
 
 // @Summary Hello endpoint
 // @Description Returns a greeting message.
@@ -69,8 +69,11 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/hello", homeHandler)
-	mux.HandleFunc("/songCreate", songHandler.CreateSongHandler)
-	mux.HandleFunc("/songUpdate", songHandler.UpdateSongHandler)
+	mux.HandleFunc("/songs/create", songHandler.CreateSongHandler)
+	mux.HandleFunc("/songs/update", songHandler.UpdateSongHandler)
+	mux.HandleFunc("/songs/info", songHandler.GetSongByIDHandler)
+	mux.HandleFunc("/songs/delete", songHandler.DeleteSongHandler)
+	mux.HandleFunc("/songs", songHandler.GetAllSongsHandler)
 	mux.HandleFunc("/swagger/", httpSwagger.WrapHandler)
 
 	loggedMux := logger.LoggingMiddleware(mux)
