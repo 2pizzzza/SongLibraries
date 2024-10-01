@@ -72,7 +72,7 @@
 
 API спецификация доступна через Swagger. Для генерации документации выполните команду:
 ```bash
-swag init -g ./cmd/songLibraries/main.go
+  swag init --generalInfo cmd/songLibraries/main.go --output cmd/songLibraries/docs 
 ```
 После этого документация будет доступна по адресу `/swagger/index.html`.
 
