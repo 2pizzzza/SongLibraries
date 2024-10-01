@@ -4,11 +4,11 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/2pizzzza/TestTask/internal/config"
-	"github.com/2pizzzza/TestTask/internal/lib/logger/sl"
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/lib/pq"
 	"log"
-	"log/slog"
-	"os"
 )
 
 type Storage struct {
@@ -27,23 +27,17 @@ func New(con *config.Config) (*Storage, error) {
 	}
 	log.Printf("Succses connect database")
 
-	err = ExecuteSQLFile(connDb)
+	m, err := migrate.New(
+		"file://db/migrations",
+		"postgres://postgres:postgres@localhost:5432/testtask?sslmode=disable")
 	if err != nil {
-		slog.Error("Failed create db", sl.Err(err))
-		panic("good bye")
+		log.Printf("%s", err)
+	}
+	if err := m.Up(); err != nil {
+		log.Printf("%s", err)
 	}
 
 	return &Storage{
 		Db: connDb,
 	}, nil
-}
-
-func ExecuteSQLFile(db *sql.DB) error {
-	content, err := os.ReadFile("storage/init.sql")
-	if err != nil {
-		return err
-	}
-
-	_, err = db.Exec(string(content))
-	return err
 }

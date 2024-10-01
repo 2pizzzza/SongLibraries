@@ -62,7 +62,7 @@ func main() {
 	_ = songService
 
 	log.Printf("Server is live. port: %d", env.HttpConn.HttpPort)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%	d", env.HttpConn.HttpPort), loggedMux))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", env.HttpConn.HttpPort), loggedMux))
 }
 
 func setupLogger(env string) *slog.Logger {

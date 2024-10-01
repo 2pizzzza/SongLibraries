@@ -20,9 +20,3 @@ func WriteResponseBody(w http.ResponseWriter, data interface{}, statusCode int) 
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 	}
 }
-
-func PanicIfError(err error) {
-	if err != nil {
-		panic(err)
-	}
-}

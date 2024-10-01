@@ -20,6 +20,7 @@ type DatabaseConfig struct {
 	Database string
 	Username string
 	Password string
+	DbUrl    string
 }
 
 type HttpConfig struct {
@@ -34,15 +35,15 @@ func NewConfig() (db *Config, err error) {
 		return nil, err
 	}
 
-	host := os.Getenv("HOST")
-	port, _ := strconv.Atoi(os.Getenv("PORT"))
+	host := os.Getenv("DB_HOST")
+	port, _ := strconv.Atoi(os.Getenv("DB_PORT"))
 	dbname := os.Getenv("DB_NAME")
-	pass := os.Getenv("PASSWORD")
+	pass := os.Getenv("DB_PASSWORD")
+	dburl := os.Getenv("DB_URL")
 
 	env := os.Getenv("ENV")
 
-  httpPort, _ := strconv.Atoi(os.Getenv("HTTP_PORT"))
-
+	httpPort, _ := strconv.Atoi(os.Getenv("HTTP_PORT"))
 
 	return &Config{
 		Env: env,
@@ -52,6 +53,7 @@ func NewConfig() (db *Config, err error) {
 			Database: dbname,
 			Username: pass,
 			Password: pass,
+			DbUrl:    dburl,
 		},
 		HttpConn: HttpConfig{
 			HttpPort: httpPort,
