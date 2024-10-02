@@ -196,3 +196,48 @@ func (h *Handlers) GetAllSongsHandler(w http.ResponseWriter, r *http.Request) {
 
 	utils.WriteResponseBody(w, songs, 200)
 }
+
+// GetSongLyrics godoc
+// @Summary Get song lyrics with pagination
+// @Description Fetch the song lyrics with pagination by couplets
+// @Tags songs
+// @Accept json
+// @Produce json
+// @Param id path int true "Song ID"
+// @Param page query int true "Page number"
+// @Param limit query int true "Couplets per page"
+// @Success 200 {object} models.LyricsResponse "Lyrics retrieved successfully"
+// @Failure 400 {object} models.ErrorResponse "Bad request"
+// @Failure 404 {object} models.ErrorResponse "Song not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /songs/{id}/lyrics [get]
+func (h *Handlers) GetSongLyricsHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		utils.WriteResponseBody(w, models.ErrorResponse{Message: "Invalid song ID"}, http.StatusBadRequest)
+		return
+	}
+
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil || page <= 0 {
+		page = 1
+	}
+
+	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	if err != nil || limit <= 0 {
+		limit = 10
+	}
+
+	lyricsResp, err := h.SongService.GetLyricsByIDWithPagination(context.Background(), id, page, limit)
+	if err != nil {
+		if errors.Is(err, storage.ErrSongNotFound) {
+			utils.WriteResponseBody(w, models.ErrorResponse{Message: "Song not found"}, http.StatusNotFound)
+		} else {
+			utils.WriteResponseBody(w, models.ErrorResponse{Message: "Failed to retrieve lyrics"}, http.StatusInternalServerError)
+		}
+		return
+	}
+
+	utils.WriteResponseBody(w, lyricsResp, http.StatusOK)
+}

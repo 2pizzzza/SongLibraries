@@ -59,6 +59,7 @@ func main() {
 	mux.HandleFunc("/songs/info", songHandler.GetSongByIDHandler)
 	mux.HandleFunc("/songs/delete", songHandler.DeleteSongHandler)
 	mux.HandleFunc("/songs", songHandler.GetAllSongsHandler)
+	mux.HandleFunc("/songs/{id}/lyrics", songHandler.GetSongLyricsHandler)
 	mux.HandleFunc("/swagger/", httpSwagger.WrapHandler)
 
 	loggedMux := logger.LoggingMiddleware(mux)

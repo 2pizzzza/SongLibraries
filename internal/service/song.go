@@ -6,6 +6,7 @@ import (
 	"github.com/2pizzzza/TestTask/internal/domain/models"
 	"github.com/2pizzzza/TestTask/internal/lib/logger/sl"
 	"log/slog"
+	"strings"
 )
 
 func (s *SongRep) CreateSong(
@@ -107,4 +108,46 @@ func (s *SongRep) GetAllSong(ctx context.Context, filter models.SongFilter, limi
 
 	log.Info("fetched all songs")
 	return songs, nil
+}
+
+func (s *SongRep) GetLyricsByIDWithPagination(
+	ctx context.Context, id int64, page, limit int) (models.LyricsResponse, error) {
+
+	const op = "service.song.GetLyricsByIDWithPagination"
+
+	log := s.log.With(
+		slog.String("op", op),
+	)
+
+	song, err := s.songRep.GetById(ctx, id)
+	if err != nil {
+		log.Error("Failed to get song by id", sl.Err(err))
+		return models.LyricsResponse{}, fmt.Errorf("%s: %w", op, err)
+	}
+
+	couplets := strings.Split(song.Lyrics, "\n\n")
+	totalCouplets := len(couplets)
+
+	start := (page - 1) * limit
+	if start > totalCouplets {
+		return models.LyricsResponse{}, fmt.Errorf("page out of range")
+	}
+	end := start + limit
+	if end > totalCouplets {
+		end = totalCouplets
+	}
+
+	resp := models.LyricsResponse{
+		SongID:   song.Id,
+		Title:    song.SongName,
+		Group:    song.GroupName,
+		Page:     page,
+		Limit:    limit,
+		Total:    totalCouplets,
+		Couplets: couplets[start:end],
+	}
+
+	log.Info("Lyrics retrieved successfully")
+
+	return resp, nil
 }

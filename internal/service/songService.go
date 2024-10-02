@@ -17,6 +17,7 @@ type SongService interface {
 	GetSongByID(ctx context.Context, id int64) (models.Song, error)
 	DeleteSong(ctx context.Context, id int64) (string, error)
 	GetAllSong(ctx context.Context, filter models.SongFilter, limit, offset int) (songs []*models.Song, err error)
+	GetLyricsByIDWithPagination(ctx context.Context, id int64, page, limit int) (models.LyricsResponse, error)
 }
 
 type SongRepository interface {

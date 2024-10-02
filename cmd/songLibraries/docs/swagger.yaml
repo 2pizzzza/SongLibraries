@@ -5,6 +5,25 @@ definitions:
       message:
         type: string
     type: object
+  models.LyricsResponse:
+    properties:
+      couplets:
+        items:
+          type: string
+        type: array
+      group:
+        type: string
+      limit:
+        type: integer
+      page:
+        type: integer
+      song_id:
+        type: integer
+      title:
+        type: string
+      total:
+        type: integer
+    type: object
   models.Song:
     properties:
       groupName:
@@ -92,6 +111,49 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Get all songs
+      tags:
+      - songs
+  /songs/{id}/lyrics:
+    get:
+      consumes:
+      - application/json
+      description: Fetch the song lyrics with pagination by couplets
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Page number
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Couplets per page
+        in: query
+        name: limit
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lyrics retrieved successfully
+          schema:
+            $ref: '#/definitions/models.LyricsResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Song not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get song lyrics with pagination
       tags:
       - songs
   /songs/create:

@@ -35,3 +35,13 @@ type SongFilter struct {
 type ErrorResponse struct {
 	Message string `json:"message"`
 }
+
+type LyricsResponse struct {
+	SongID   int64    `json:"song_id"`
+	Title    string   `json:"title"`
+	Group    string   `json:"group"`
+	Page     int      `json:"page"`
+	Limit    int      `json:"limit"`
+	Total    int      `json:"total"`
+	Couplets []string `json:"couplets"`
+}
