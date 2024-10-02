@@ -11,13 +11,13 @@ import (
 )
 
 func (s *Storage) Save(
-	ctx context.Context, groupName, songName string) (string, error) {
+	ctx context.Context, groupName, songName, releaseDate, link string) (string, error) {
 
 	const op = "postgres.song.Save"
 
 	var exists bool
 	err := s.Db.QueryRow(
-		"SELECT EXISTS(SELECT 1 FROM testtask.public.songs WHERE group_name = $1 AND song_title = $2)",
+		"SELECT EXISTS(SELECT 1 FROM songs WHERE group_name = $1 AND song_title = $2)",
 		groupName, songName).Scan(&exists)
 
 	if err != nil {
@@ -31,8 +31,8 @@ func (s *Storage) Save(
 	}
 
 	_, err = s.Db.Exec(
-		"INSERT INTO testtask.public.songs (group_name, song_title) VALUES($1, $2)",
-		groupName, songName)
+		"INSERT INTO songs (group_name, song_title, release_date, link) VALUES($1, $2, $3 ,$4)",
+		groupName, songName, releaseDate, link)
 
 	if err != nil {
 		log.Printf("failed to create song: %v op: %s", err, op)
@@ -50,7 +50,7 @@ func (s *Storage) GetById(
 
 	var song models.Song
 
-	stmt, err := s.Db.Prepare("SELECT id, group_name, song_title, release_date, lyrics, link FROM testtask.public.songs WHERE id = $1")
+	stmt, err := s.Db.Prepare("SELECT id, group_name, song_title, release_date, lyrics, link FROM songs WHERE id = $1")
 	if err != nil {
 		return models.Song{}, fmt.Errorf("%s, %w", op, err)
 	}
@@ -76,7 +76,7 @@ func (s *Storage) Update(
 
 	const op = "postgres.song.Update"
 
-	stmt, err := s.Db.Prepare("UPDATE testtask.public.songs SET group_name = $2, song_title = $3 WHERE id = $1")
+	stmt, err := s.Db.Prepare("UPDATE songs SET group_name = $2, song_title = $3 WHERE id = $1")
 	if err != nil {
 		return models.Song{}, fmt.Errorf("%s, %w", op, err)
 	}
@@ -111,7 +111,7 @@ func (s *Storage) Update(
 func (s *Storage) Remove(ctx context.Context, id int64) (string, error) {
 	const op = "postgres.song.Remove"
 
-	stmt, err := s.Db.Prepare("DELETE FROM testtask.public.songs WHERE id = $1")
+	stmt, err := s.Db.Prepare("DELETE FROM songs WHERE id = $1")
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
@@ -141,7 +141,7 @@ func (s *Storage) Remove(ctx context.Context, id int64) (string, error) {
 func (s *Storage) GetAll(ctx context.Context, filter models.SongFilter, limit, offset int) (songs []*models.Song, err error) {
 	const op = "postgres.song.GetAll"
 
-	query := "SELECT * FROM testtask.public.songs WHERE TRUE"
+	query := "SELECT * FROM songs WHERE TRUE"
 	args := []interface{}{}
 	argCount := 1
 

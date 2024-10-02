@@ -21,7 +21,7 @@ type SongService interface {
 }
 
 type SongRepository interface {
-	Save(ctx context.Context, groupName, songName string) (string, error)
+	Save(ctx context.Context, groupName, songName, releaseDate, link string) (string, error)
 	GetById(ctx context.Context, id int64) (models.Song, error)
 	Update(ctx context.Context, id int64, newGroupName, newSongName string) (models.Song, error)
 	Remove(ctx context.Context, id int64) (string, error)

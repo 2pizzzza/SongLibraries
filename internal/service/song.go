@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/2pizzzza/TestTask/internal/domain/models"
 	"github.com/2pizzzza/TestTask/internal/lib/logger/sl"
+	"github.com/2pizzzza/TestTask/internal/utils"
 	"log/slog"
 	"strings"
 )
@@ -17,8 +18,13 @@ func (s *SongRep) CreateSong(
 	log := s.log.With(
 		slog.String("op: ", op),
 	)
-
-	msg, err := s.songRep.Save(ctx, req.GroupName, req.SongName)
+	trcInfo, err := utils.FetchTrackInfo(req.SongName, req.GroupName)
+	if err != nil {
+		log.Error("Failed get data about song", sl.Err(err))
+		trcInfo.SpotifyURL = ""
+		trcInfo.ReleaseDate = ""
+	}
+	msg, err := s.songRep.Save(ctx, req.GroupName, req.SongName, trcInfo.ReleaseDate, trcInfo.SpotifyURL)
 
 	if err != nil {
 		log.Error(msg, sl.Err(err))
