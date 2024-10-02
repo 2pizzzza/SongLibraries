@@ -13,7 +13,7 @@ type TrackInfo struct {
 }
 
 func FetchTrackInfo(songName string, artistName string) (*TrackInfo, error) {
-	url := fmt.Sprintf("https://tempserver-chbp.onrender.com/search?song=%s&artist=%s", songName, artistName)
+	url := fmt.Sprintf("http://127.0.0.1:8000/search?song=%s&artist=%s", songName, artistName)
 
 	resp, err := http.Get(url)
 	if err != nil {
