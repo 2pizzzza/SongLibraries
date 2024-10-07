@@ -1,10 +1,12 @@
 package models
 
+import "time"
+
 type Song struct {
 	Id          int64
 	GroupName   string
 	SongName    string
-	ReleaseDate string
+	ReleaseDate time.Time
 	Lyrics      string
 	Link        string
 }
@@ -27,7 +29,7 @@ type SongCreateResponse struct {
 type SongFilter struct {
 	GroupName   string
 	SongName    string
-	ReleaseDate string
+	ReleaseDate time.Time
 }
 
 type ErrorResponse struct {
