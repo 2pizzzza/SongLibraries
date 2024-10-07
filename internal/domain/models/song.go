@@ -4,11 +4,16 @@ import "time"
 
 type Song struct {
 	Id          int64
-	GroupName   string
+	GroupName   Group
 	SongName    string
 	ReleaseDate time.Time
 	Lyrics      string
 	Link        string
+}
+
+type Group struct {
+	Id        int64
+	GroupName string
 }
 
 type SongCreateReq struct {
@@ -29,7 +34,7 @@ type SongCreateResponse struct {
 type SongFilter struct {
 	GroupName   string
 	SongName    string
-	ReleaseDate time.Time
+	ReleaseDate string
 }
 
 type ErrorResponse struct {
