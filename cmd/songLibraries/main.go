@@ -26,7 +26,6 @@ const (
 // @version 1.0
 // @termsOfService http://swagger.io/terms/
 
-// @contact.name API Support
 // @contact.url http://www.swagger.io/support
 // @contact.email support@swagger.io
 
